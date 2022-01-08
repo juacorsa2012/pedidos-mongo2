@@ -18,6 +18,3 @@ app.use(notfound)
 app.use(errorHandler)
 
 export default app
-
-
-
