@@ -1,23 +1,26 @@
+import 'express-async-errors'
 import dotenv from 'dotenv'
-import connect from './db/connect.js'
 import app from './app.js'
 
-dotenv.config()
+if (process.NODE_ENV == 'production') {  
+  dotenv.config({ path: '.env' })
+}
+else if (process.NODE_ENV == 'development') {
+  dotenv.config({ path: '.env.development' })
+}
+else {
+  dotenv.config({ path: '.env.testing' })
+}
 
 const PORT = process.env.PORT || 3001
 
-const start = async () => {
-  try {
-    await connect(process.env.MONGO_URL)
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`)
-      console.log('Database connected')
-      console.log("Press CTRL-C to stop")      
-    })
-  } catch (error) {
-    console.log(error)    
-    process.exit(1)
-  }
-}
+const server = app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT} (${process.env.NODE_ENV})`)
+  console.log('Database connected')
+  console.log("Press CTRL-C to stop")      
+})    
 
-start()
+export default server
+
+// git push heroku master
+// https://pedidos-jc.herokuapp.com/api/v1/clientes

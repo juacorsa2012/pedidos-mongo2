@@ -1,0 +1,30 @@
+### GET /clientes
+GET http://localhost:3001/api/v1/clientes
+
+### POST /clientes
+POST http://localhost:3001/api/v1/clientes
+Content-Type: application/json
+
+{
+  "nombre": "Entorno Empresarial"
+}
+
+
+###
+GET http://localhost:3001/api/v1/clientes/61e839021e4aa26d5e852e7b
+
+
+
+
+### GET /proveedores
+GET http://localhost:3001/api/v1/proveedores
+
+### POST /proveedores
+POST http://localhost:3001/api/v1/proveedores
+Content-Type: application/json
+
+{
+  "nombre": "Goya"
+}
+
+
