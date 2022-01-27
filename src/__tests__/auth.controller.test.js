@@ -90,7 +90,48 @@ describe(`${url}`, () => {
     expect(res.body.message).toBe(Message.NOMBRE_DEMASIADO_LARGO)
   })
 
+  it("POST - debe realizar un login correcto", async () => {
+    const usuario = {email: 'usuario@test.com', password: 'password'}
+    const res = await request(server).post(url + 'login').send(usuario)
+    expect(res.statusCode).toBe(StatusCodes.OK)
+    expect(res.body.status).toBe(Constant.SUCCESS)        
+    expect(res.body.usuario.email).toBe(usuario.email)   
+    expect(res.body.token).toBeDefined()     
+    expect(res.body.password).not.toBeDefined()     
+  })
 
+  it("POST - debe un error 400 si las credenciales no son válidas (password incorrecto)", async () => {
+    const usuario = {email: 'usuario@test.com', password: '1234567'}
+    const res = await request(server).post(url + 'login').send(usuario)
+    expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED)
+    expect(res.body.message).toBe(Message.CREDENCIALES_INCORRECTAS)
+  })
+  
+  it("POST - debe un error 400 si las credenciales no son válidas (email incorrecto)", async () => {
+    const usuario = {email: 'usuario@test.es', password: 'password'}
+    const res = await request(server).post(url + 'login').send(usuario)
+    expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED)
+    expect(res.body.message).toBe(Message.CREDENCIALES_INCORRECTAS)
+  })
 
+  it("POST - debe un error 400 si las credenciales no son válidas (sin password))", async () => {
+    const usuario = {email: 'usuario@test.es', password: ''}
+    const res = await request(server).post(url + 'login').send(usuario)
+    expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED)
+    expect(res.body.message).toBe(Message.CREDENCIALES_INCORRECTAS)
+  })
 
+  it("POST - debe un error 400 si las credenciales no son válidas (sin email))", async () => {
+    const usuario = {email: '', password: 'password'}
+    const res = await request(server).post(url + 'login').send(usuario)
+    expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED)
+    expect(res.body.message).toBe(Message.CREDENCIALES_INCORRECTAS)
+  })
+
+  it("POST - debe un error 400 si el email no existe", async () => {
+    const usuario = {email: 'email@test.com', password: 'password'}
+    const res = await request(server).post(url + 'login').send(usuario)
+    expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED)
+    expect(res.body.message).toBe(Message.CREDENCIALES_INCORRECTAS)
+  })
 })
