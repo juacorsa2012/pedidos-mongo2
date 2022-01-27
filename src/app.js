@@ -7,15 +7,7 @@ import proveedoresRouter from './routes/proveedores.routes.js'
 import { notFound, errorHandler } from './middlewares/index.js'
 import connect from './db/connect.js'
 
-if (process.NODE_ENV == 'production') {  
-  dotenv.config({ path: '.env' })
-}
-else if (process.NODE_ENV == 'development') {
-  dotenv.config({ path: '.env.development' })
-}
-else {
-  dotenv.config({ path: '.env.testing' })
-}
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
 const app = express()
 

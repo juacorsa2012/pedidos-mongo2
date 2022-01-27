@@ -1,16 +1,5 @@
 import 'express-async-errors'
-import dotenv from 'dotenv'
 import app from './app.js'
-
-if (process.NODE_ENV == 'production') {  
-  dotenv.config({ path: '.env' })
-}
-else if (process.NODE_ENV == 'development') {
-  dotenv.config({ path: '.env.development' })
-}
-else {
-  dotenv.config({ path: '.env.testing' })
-}
 
 const PORT = process.env.PORT || 3001
 
