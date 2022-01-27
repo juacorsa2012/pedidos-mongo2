@@ -1,5 +1,6 @@
 export default {
   USUARIO_REGISTRADO_CORRECTAMENTE: 'Usuario registrado correctamente',
+  USUARIO_DUPLICADO  : 'Ya existe un usuario registrado con el email facilitado',
   EMAIL_REQUERIDO    : 'El email es un dato requerido',
   EMAIL_NO_VALIDO    : 'El email no tiene un formato válido',
   PASSWORD_REQUERIDO : 'El password es un dato requerido',

@@ -7,7 +7,13 @@ const registrarUsuario = async (nombre, email, password, rol) => {
     throw new BadRequestError(Message.TODOS_CAMPOS_REQUERIDOS)    
   }
 
-  const usuario = await Usuario.create({nombre, email, password, rol})  
+  const existeUsuario = await Usuario.findOne({'email': new RegExp(`^${email}$`, 'i')})
+  
+  if (existeUsuario) {
+    throw new BadRequestError(Message.USUARIO_DUPLICADO)
+  }
+
+  const usuario = await Usuario.create({nombre, email, password, rol})     
 
   return usuario
 }
