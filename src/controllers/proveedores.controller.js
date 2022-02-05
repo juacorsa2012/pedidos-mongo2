@@ -7,11 +7,7 @@ import Message from '../messages/proveedores.message.js'
 import proveedorService from '../services/proveedores.service.js'
 
 const obtenerProveedores = async (req, res) => {
-  const features = new Features(Proveedor.find(), req.query)
-    .filter()
-    .sort()  
-    .paginate()
-
+  const features = new Features(Proveedor.find(), req.query).filter().sort().paginate()
   const proveedores = await features.query
 
   res.status(StatusCodes.OK).send({

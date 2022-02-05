@@ -64,5 +64,5 @@ export default {
   obtenerCliente,  
   registrarCliente,
   actualizarCliente,
-  contarClientes
+  contarClientes 
 }

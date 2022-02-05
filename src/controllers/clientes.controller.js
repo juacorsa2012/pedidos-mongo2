@@ -6,13 +6,9 @@ import Message from '../messages/clientes.message.js'
 import clienteService from '../services/clientes.service.js'
 
 const obtenerClientes = async (req, res) => {
-  const features = new Features(Cliente.find(), req.query)
-    .filter()
-    .sort()  
-    .paginate()
-
+  const features = new Features(Cliente.find(), req.query).filter().sort().paginate()
   const clientes = await features.query 
-  
+ 
   res.status(StatusCodes.OK).send({
     status : Constant.SUCCESS, 
     results: clientes.length,
