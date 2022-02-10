@@ -59,7 +59,7 @@ describe(`${url}`, () => {
   })
 
   it("POST - debe registrar un pedido con éxito", async () => {
-    const pedido = {producto: 'producto', unidades: 7, cliente: cliente._id, proveedor: proveedor._id}
+    const pedido = {producto: 'producto', unidades: 7, cliente: cliente._id, proveedor: proveedor._id, estado: 'P'}
     const res = await request(server).post(url).send(pedido)
     expect(res.statusCode).toBe(StatusCodes.CREATED)
     expect(res.body.status).toBe(Constant.SUCCESS)           
@@ -112,21 +112,77 @@ describe(`${url}`, () => {
     expect(res.body.message).toBe(Message.UNIDADES_REQUERIDO)
   })
 
+  it("POST - debe devolver un error 400 si el cliente no existe", async () => {
+    const id = mongoose.Types.ObjectId()
+    const pedido = {producto: 'producto', unidades: 10, cliente: id, proveedor: proveedor._id}
+    const res = await request(server).post(url).send(pedido)
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(res.body.message).toBe(Message.CLIENTE_NO_ENCONTRADO)
+  })
+
+  it("POST - debe devolver un error 400 si el proveedor no existe", async () => {
+    const id = mongoose.Types.ObjectId()
+    const pedido = {producto: 'producto', unidades: 10, cliente: cliente._id, proveedor: id}
+    const res = await request(server).post(url).send(pedido)
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(res.body.message).toBe(Message.PROVEEDOR_NO_ENCONTRADO)
+  })
+
   it("PUT - debe actualizar un pedido con éxito", async() => {
-    const pedido_actualizado = { producto: "producto 2", unidades: 54, cliente: cliente._id, proveedor: proveedor._id, estado: 'A' }
-    const res = await request(server).put(url + pedido._id).send(pedido_actualizado)
+    const pedido_nuevo = { producto: "producto 2", unidades: 54, cliente: cliente._id, proveedor: proveedor._id, estado: 'A' }
+    const res = await request(server).put(url + pedido._id).send(pedido_nuevo)
     expect(res.statusCode).toBe(StatusCodes.OK)
     expect(res.body.status).toBe(Constant.SUCCESS)   
     expect(res.body.message).toBe(Message.PEDIDO_ACTUALIZADO)
-    expect(res.body.pedido.producto).toBe(pedido_actualizado.producto)
-    expect(res.body.pedido.unidades).toBe(pedido_actualizado.unidades)
-    expect(res.body.pedido.estado).toBe(pedido_actualizado.estado)
+    expect(res.body.pedido.producto).toBe(pedido_nuevo.producto)
+    expect(res.body.pedido.unidades).toBe(pedido_nuevo.unidades)
+    expect(res.body.pedido.estado).toBe(pedido_nuevo.estado)
     expect(res.body.pedido.cliente).toBeDefined()
     expect(res.body.pedido.proveedor).toBeDefined()
   })  
 
+  it("PUT - debe devolver un error 400 si al actualizar un pedido no se indica el producto", async() => {
+    const pedido_nuevo = { producto: "", unidades: 54, cliente: cliente._id, proveedor: proveedor._id, estado: 'A' }
+    const res = await request(server).put(url + pedido._id).send(pedido_nuevo)
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(res.body.message).toBe(Message.PRODUCTO_REQUERIDO)
+  })  
 
+  it("PUT - debe devolver un error 400 si al actualizar un pedido no se indica el número de unidades", async() => {
+    const pedido_nuevo = { producto: "producto", unidades: 0, cliente: cliente._id, proveedor: proveedor._id, estado: 'A' }
+    const res = await request(server).put(url + pedido._id).send(pedido_nuevo)
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(res.body.message).toBe(Message.UNIDADES_REQUERIDO)
+  })  
 
+  it("PUT - debe devolver un error 400 si al actualziar un pedido el número de unidades es inferior a cero", async() => {
+    const pedido_nuevo = { producto: "producto", unidades: -1, cliente: cliente._id, proveedor: proveedor._id, estado: 'A' }
+    const res = await request(server).put(url + pedido._id).send(pedido_nuevo)
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(res.body.message).toBe(Message.UNIDADES_NO_VALIDAS)
+  })  
+
+  it("PUT - debe devolver un error 400 si al actualizar un pedido no se indica el cliente asociado", async() => {
+    const pedido_nuevo = { producto: "producto", unidades: 54, proveedor: proveedor._id, estado: 'A' }
+    const res = await request(server).put(url + pedido._id).send(pedido_nuevo)
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(res.body.message).toBe(Message.CLIENTE_REQUERIDO)
+  })  
+  
+  it("PUT - debe devolver un error 400 si al actualizar un pedido no se indica el proveedor asociado", async() => {
+    const pedido_nuevo = { producto: "producto", unidades: 54, cliente: cliente._id, estado: 'A' }
+    const res = await request(server).put(url + pedido._id).send(pedido_nuevo)
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(res.body.message).toBe(Message.PROVEEDOR_REQUERIDO)
+  })    
+  
+  it("PUT - debe devolver un error 400 si al actualizar un pedido el estado no es un valor correcto", async() => {
+    const pedido_nuevo = { producto: "producto", unidades: 54, cliente: cliente._id, proveedor: proveedor._id, estado: 'XX' }
+    const res = await request(server).put(url + pedido._id).send(pedido_nuevo)
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(res.body.message).toBe(Message.ESTADO_NO_VALIDO)
+  })  
+    
   it("DEL - debe eliminar un pedido existente", async () => {    
     const res = await request(server).del(url + pedido._id) 
     expect(res.statusCode).toBe(StatusCodes.OK)
